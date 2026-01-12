@@ -12,6 +12,7 @@ class formArtigos(QtWidgets.QMainWindow,Ui_MainWindow):
         self.pushButton_voltar.clicked.connect(self.voltar)
         self.pushButton_6.clicked.connect(self.EliminarArtigo)
         self.pushButton_2.clicked.connect(self.listagemartigos)
+        self.pushButton_3.clicked.connect(self.LimparFiltro)
 
 
     def listagemartigos(self):
