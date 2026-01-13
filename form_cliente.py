@@ -13,6 +13,7 @@ class formCliente(QtWidgets.QMainWindow,Ui_MainWindow):
         self.pushButton_voltar.clicked.connect(self.voltar)
         self.pushButton_6.clicked.connect(self.EliminarCliente)
         self.pushButton_3.clicked.connect(self.LimparFiltro)
+        self.pushButton_2.clicked.connect(self.listagemclientes)
 
     def voltar(self):
         self.close()

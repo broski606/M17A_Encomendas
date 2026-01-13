@@ -22,12 +22,12 @@ class formEncomendas(QtWidgets.QMainWindow,Ui_MainWindow):
             if conn_BD and conn_BD!=-1:
                 filtro = self.lineEdit.text()
                 if len(filtro) > 0:
-                    cmd_sql = f"SELECT * FROM encomenda WHERE designacao LIKE '%{filtro}%' ORDER BY designacao ASC;"
-                else:
-                    cmd_sql = "SELECT * FROM encomenda ORDER BY designacao ASC;"
+                    cmd_sql = f"SELECT encomenda.nEncomenda, CONCAT(cliente.id, '-', cliente.nome), dataEncomenda, dataEntrega FROM encomenda, detalheencomenda, cliente WHERE encomenda.nEncomenda = detalheencomenda.nEncomenda AND encomenda.idCliente = cliente.id AND cliente.nome LIKE '%{filtro}%' ORDER BY encomenda.dataEncomenda DESC;"
+                elif len(filtro) == 0:
+                    cmd_sql = f"SELECT encomenda.nEncomenda, CONCAT(cliente.id, '-', cliente.nome), dataEncomenda, dataEntrega FROM encomenda, detalheencomenda, cliente WHERE encomenda.nEncomenda = detalheencomenda.nEncomenda AND encomenda.idCliente = cliente.id ORDER BY encomenda.dataEncomenda DESC;"
                 dados = listagem_BD(conn_BD, cmd_sql)
                 modelo = QStandardItemModel()
-                modelo.setHorizontalHeaderLabels(["Identificador", "Designação"])
+                modelo.setHorizontalHeaderLabels(["N.ºEncomenda", "Cliente", "Data Encomenda", "Data Entrega"])
                 for linha in dados:
                     modelo.appendRow([QStandardItem(str(celula) if celula is not None else "") for celula in linha])
                 self.tableView.setModel(modelo)
