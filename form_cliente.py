@@ -11,6 +11,8 @@ class formCliente(QtWidgets.QMainWindow,Ui_MainWindow):
         self.form_principal = form_principal
         
         self.pushButton_voltar.clicked.connect(self.voltar)
+        self.pushButton_6.clicked.connect(self.EliminarCliente)
+        self.pushButton_3.clicked.connect(self.LimparFiltro)
 
     def voltar(self):
         self.close()
@@ -39,3 +41,40 @@ class formCliente(QtWidgets.QMainWindow,Ui_MainWindow):
                 self.tableView.setEditTriggers(QtWidgets.QTableView.NoEditTriggers)
         except Exception as e:
             QtWidgets.QMessageBox.critical(self,"Erro",f"Ocorreu um erro:{e}")
+        
+    #-------------------------------------------------------------Sepraador-----------------------------------------------------------------#
+
+    def LimparFiltro(self):
+        self.lineEdit.setText("")
+        #self.lineEdit.clear()
+        self.listagemclientes()
+
+    def EliminarCliente(self):
+        selecionados = self.tableView.selectionModel().selectedRows()
+        if selecionados:
+            linha = selecionados[0].row() # primeira linha selecionada
+            modelo = self.tableView.model()
+            id_cliente = modelo.data(modelo.index(linha, 0)) # Primeiro item da linha (identificador)
+            nome_cliente = modelo.data(modelo.index(linha,1))
+
+            conn_BD = ligacao_BD()
+            if conn_BD and conn_BD!=-1:
+                cmd_sql = "SELECT COUNT(*) FROM encomenda WHERE idCliente = %s;"
+                num_registos = consultaUmValor(conn_BD,cmd_sql,(id_cliente,))
+                if num_registos == 0:
+                    resposta = QtWidgets.QMessageBox.question(self, "Questão", f"Tem certeza de que deseja excluir o cliente com identificador {id_cliente} e nome {nome_cliente}?")
+                    if resposta == QtWidgets.QMessageBox.Yes:
+                            # Eliminar o registo da BD
+                            cmd_sql = "DELETE FROM cliente WHERE id = %s;"
+                            num_registos= operacao_DML(conn_BD,cmd_sql,(id_cliente,))
+                            if num_registos > 0: 
+                                QtWidgets.QMessageBox.information(self, "Sucesso", "A eliminação do registo foi bem sucedida!")
+                                self.listagemclientes()
+                            else:
+                                QtWidgets.QMessageBox.warning(self, "Aviso", "Nenhum registo foi eliminado !")
+                    else:
+                            QtWidgets.QMessageBox.warning(self, "Aviso", "A eliminação do registo foi cancelada!")
+                else:
+                    QtWidgets.QMessageBox.warning(self,"Aviso",f"Não é possível eliminar o cliente {nome_cliente} pois existem encomendas associadas a esse cliente!")
+        else:
+            QtWidgets.QMessageBox.warning(self,"Aviso","É necessário selecionar a linha da tabela que contém o registo do cliente a eliminar!")
