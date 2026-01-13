@@ -1,6 +1,6 @@
-CREATE DATABASE bdencomendas_T1;
+CREATE DATABASE bdEncomendas_T1;
 
-USE bdencomendas_T1;
+USE bdEncomendas_T1;
 
 CREATE TABLE categoria(
 id INT PRIMARY KEY,

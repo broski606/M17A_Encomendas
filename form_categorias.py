@@ -58,9 +58,9 @@ class formCategorias(QtWidgets.QMainWindow,Ui_MainWindow):
             if conn_BD and conn_BD!=-1:
                 filtro = self.lineEdit.text()
                 if len(filtro) > 0:
-                    cmd_sql = f"SELECT * FROM Categoria WHERE designacao LIKE '%{filtro}%' ORDER BY designacao ASC;"
+                    cmd_sql = f"SELECT * FROM categoria WHERE designacao LIKE '%{filtro}%' ORDER BY designacao ASC;"
                 else:
-                    cmd_sql = "SELECT * FROM Categoria ORDER BY designacao ASC;"
+                    cmd_sql = "SELECT * FROM categoria ORDER BY designacao ASC;"
                 dados = listagem_BD(conn_BD, cmd_sql)
 
                 modelo = QStandardItemModel()
@@ -102,7 +102,7 @@ class formCategorias(QtWidgets.QMainWindow,Ui_MainWindow):
                     resposta = QtWidgets.QMessageBox.question(self, "Questão", f"Tem certeza de que deseja excluir a categoria com identificador {id_categoria} e designação {nome_categoria}?")
                     if resposta == QtWidgets.QMessageBox.Yes:
                             # Eliminar o registo da BD
-                            cmd_sql = "DELETE FROM Categoria WHERE id = %s;"
+                            cmd_sql = "DELETE FROM categoria WHERE id = %s;"
                             num_registos= operacao_DML(conn_BD,cmd_sql,(id_categoria,))
                             if num_registos > 0: 
                                 QtWidgets.QMessageBox.information(self, "Sucesso", "A eliminação do registo foi bem sucedida!")
