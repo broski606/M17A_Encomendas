@@ -2,6 +2,7 @@ from PyQt5 import QtWidgets
 from Interfaces.formCliente import Ui_MainWindow
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from base_dados import ligacao_BD, listagem_BD, consultaUmValor, operacao_DML
+from form_detalhes_cliente import FormDetalhesCliente
 
 class formCliente(QtWidgets.QMainWindow,Ui_MainWindow):
     def __init__(self, form_principal):
@@ -9,15 +10,33 @@ class formCliente(QtWidgets.QMainWindow,Ui_MainWindow):
         self.setupUi(self)
 
         self.form_principal = form_principal
+        self.form_detalhes_cliente = FormDetalhesCliente(self)
         
         self.pushButton_voltar.clicked.connect(self.voltar)
         self.pushButton_6.clicked.connect(self.EliminarCliente)
         self.pushButton_3.clicked.connect(self.LimparFiltro)
         self.pushButton_2.clicked.connect(self.listagemclientes)
+        self.pushButton_7.clicked.connect(self.novo)
+        self.pushButton_4.clicked.connect(self.alterar)
 
     def voltar(self):
         self.close()
         self.form_principal.show()
+
+    def alterar(self):
+        selecao = self.tableView.selectionModel().selectedRows()
+        if not selecao:
+            QtWidgets.QMessageBox.warning(self, "Aviso", "É necessário selecionar o registo a alterar!")
+            return
+        
+        self.hide()
+        self.form_detalhes_cliente.show()
+        self.form_detalhes_cliente.inicializar(selecao, "alterar")
+
+    def novo(self):
+        self.hide()
+        self.form_detalhes_cliente.show()
+        self.form_detalhes_cliente.inicializar(None, "novo")
 
     def listagemclientes(self):
         try:
@@ -36,26 +55,22 @@ class formCliente(QtWidgets.QMainWindow,Ui_MainWindow):
                 self.tableView.setModel(modelo)
                 
                 self.tableView.resizeColumnsToContents()
-                # Selecionar apenas linhas inteiras
                 self.tableView.setSelectionBehavior(QtWidgets.QTableView.SelectRows)
                 self.tableView.setSelectionMode(QtWidgets.QTableView.SingleSelection)
                 self.tableView.setEditTriggers(QtWidgets.QTableView.NoEditTriggers)
         except Exception as e:
             QtWidgets.QMessageBox.critical(self,"Erro",f"Ocorreu um erro:{e}")
         
-    #-------------------------------------------------------------Sepraador-----------------------------------------------------------------#
-
     def LimparFiltro(self):
         self.lineEdit.setText("")
-        #self.lineEdit.clear()
         self.listagemclientes()
 
     def EliminarCliente(self):
         selecionados = self.tableView.selectionModel().selectedRows()
         if selecionados:
-            linha = selecionados[0].row() # primeira linha selecionada
+            linha = selecionados[0].row()
             modelo = self.tableView.model()
-            id_cliente = modelo.data(modelo.index(linha, 0)) # Primeiro item da linha (identificador)
+            id_cliente = modelo.data(modelo.index(linha, 0))
             nome_cliente = modelo.data(modelo.index(linha,1))
 
             conn_BD = ligacao_BD()
@@ -65,7 +80,6 @@ class formCliente(QtWidgets.QMainWindow,Ui_MainWindow):
                 if num_registos == 0:
                     resposta = QtWidgets.QMessageBox.question(self, "Questão", f"Tem certeza de que deseja excluir o cliente com identificador {id_cliente} e nome {nome_cliente}?")
                     if resposta == QtWidgets.QMessageBox.Yes:
-                            # Eliminar o registo da BD
                             cmd_sql = "DELETE FROM cliente WHERE id = %s;"
                             num_registos= operacao_DML(conn_BD,cmd_sql,(id_cliente,))
                             if num_registos > 0: 
