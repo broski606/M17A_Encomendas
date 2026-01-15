@@ -18,19 +18,17 @@ class formCategorias(QtWidgets.QMainWindow,Ui_MainWindow):
 
         self.pushButton_voltar.clicked.connect(self.voltar)
 
-        self.pushButton_6.clicked.connect(self.EliminarCategoria)
+        self.pushButton_eliminar.clicked.connect(self.EliminarCategoria)
         
-        self.pushButton_7.clicked.connect(self.novo)
+        self.pushButton_novo.clicked.connect(self.novo)
 
-        self.pushButton_4.clicked.connect(self.alterar)
+        self.pushButton_editar.clicked.connect(self.alterar)
 
-        self.pushButton_3.clicked.connect(self.LimparFiltro)
+        self.pushButton_limpar.clicked.connect(self.LimparFiltro)
 
         self.lineEdit.returnPressed.connect(self.listagemCategorias)
-        self.pushButton_2.clicked.connect(self.listagemCategorias)
+        self.pushButton_filtrar.clicked.connect(self.listagemCategorias)
 
-        # Assuming pushButton_3 exists for clearing filter
-        # self.pushButton_3.clicked.connect(self.LimparFiltro)
 
     def alterar(self):
         selecao = self.tableView.selectionModel().selectedRows()

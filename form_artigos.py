@@ -13,11 +13,11 @@ class formArtigos(QtWidgets.QMainWindow,Ui_MainWindow):
         self.form_detalhes_artigo = FormDetalhesArtigo(self)
 
         self.pushButton_voltar.clicked.connect(self.voltar)
-        self.pushButton_6.clicked.connect(self.EliminarArtigo)
-        self.pushButton_2.clicked.connect(self.listagemartigos)
-        self.pushButton_3.clicked.connect(self.LimparFiltro)
-        self.pushButton_7.clicked.connect(self.novo)
-        self.pushButton_4.clicked.connect(self.alterar)
+        self.pushButton_eliminar.clicked.connect(self.EliminarArtigo)
+        self.pushButton_filtrar.clicked.connect(self.listagemartigos)
+        self.pushButton_limpar.clicked.connect(self.LimparFiltro)
+        self.pushButton_novo.clicked.connect(self.novo)
+        self.pushButton_editar.clicked.connect(self.alterar)
     
     def alterar(self):
         selecao = self.tableView.selectionModel().selectedRows()

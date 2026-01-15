@@ -14,7 +14,7 @@ class formEncomendas(QtWidgets.QMainWindow,Ui_MainWindow):
         
         self.pushButton_2.clicked.connect(self.listagemencomendas)
 
-        self.pushButton_3.clicked.connect(self.LimparFiltro)
+        self.pushButton_limpar.clicked.connect(self.LimparFiltro)
 
     def voltar(self):
         self.close()
