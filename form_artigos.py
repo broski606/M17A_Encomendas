@@ -2,6 +2,7 @@ from PyQt5 import QtWidgets
 from Interfaces.formArtigos import Ui_MainWindow
 from base_dados import ligacao_BD, listagem_BD, consultaUmValor, operacao_DML
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
+from form_detalhes_artigo import FormDetalhesArtigo
 
 class formArtigos(QtWidgets.QMainWindow,Ui_MainWindow):
     def __init__(self, form_principal):
@@ -9,10 +10,29 @@ class formArtigos(QtWidgets.QMainWindow,Ui_MainWindow):
         self.setupUi(self)
 
         self.form_principal = form_principal
+        self.form_detalhes_artigo = FormDetalhesArtigo(self)
+
         self.pushButton_voltar.clicked.connect(self.voltar)
         self.pushButton_6.clicked.connect(self.EliminarArtigo)
         self.pushButton_2.clicked.connect(self.listagemartigos)
         self.pushButton_3.clicked.connect(self.LimparFiltro)
+        self.pushButton_7.clicked.connect(self.novo)
+        self.pushButton_4.clicked.connect(self.alterar)
+    
+    def alterar(self):
+        selecao = self.tableView.selectionModel().selectedRows()
+        if not selecao:
+            QtWidgets.QMessageBox.warning(self, "Aviso", "É necessário selecionar o registo a alterar!")
+            return
+        
+        self.hide()
+        self.form_detalhes_artigo.show()
+        self.form_detalhes_artigo.inicializar(selecao, "alterar")
+
+    def novo(self):
+        self.hide()
+        self.form_detalhes_artigo.show()
+        self.form_detalhes_artigo.inicializar(None, "novo")
 
 
     def listagemartigos(self):
@@ -32,7 +52,6 @@ class formArtigos(QtWidgets.QMainWindow,Ui_MainWindow):
                 self.tableView.setModel(modelo)
                 
                 self.tableView.resizeColumnsToContents()
-                # Selecionar apenas linhas inteiras
                 self.tableView.setSelectionBehavior(QtWidgets.QTableView.SelectRows)
                 self.tableView.setSelectionMode(QtWidgets.QTableView.SingleSelection)
                 self.tableView.setEditTriggers(QtWidgets.QTableView.NoEditTriggers)
@@ -50,7 +69,7 @@ class formArtigos(QtWidgets.QMainWindow,Ui_MainWindow):
             linha = selecionados[0].row() # primeira linha selecionada
             modelo = self.tableView.model()
             id_artigo = modelo.data(modelo.index(linha, 0)) # Primeiro item da linha (identificador)
-            nome_artigo = modelo.data(modelo.index(linha,1))
+            nome_artigo = modelo.data(modelo.index(linha,2))
 
             conn_BD = ligacao_BD()
             if conn_BD and conn_BD!=-1:
@@ -64,7 +83,7 @@ class formArtigos(QtWidgets.QMainWindow,Ui_MainWindow):
                             num_registos= operacao_DML(conn_BD,cmd_sql,(id_artigo,))
                             if num_registos > 0: 
                                 QtWidgets.QMessageBox.information(self, "Sucesso", "A eliminação do registo foi bem sucedida!")
-                                self.listagemCategorias()
+                                self.listagemartigos()
                             else:
                                 QtWidgets.QMessageBox.warning(self, "Aviso", "Nenhum registo foi eliminado !")
                     else:
