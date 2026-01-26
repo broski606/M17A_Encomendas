@@ -9,7 +9,7 @@ class formEncomendas(QtWidgets.QMainWindow,Ui_MainWindow):
         self.setupUi(self)
 
         self.form_principal = form_principal
-
+        
         self.pushButton_voltar.clicked.connect(self.voltar)
         
         self.pushButton_2.clicked.connect(self.listagemencomendas)
@@ -33,6 +33,26 @@ class formEncomendas(QtWidgets.QMainWindow,Ui_MainWindow):
         self.radioButton_2.setAutoExclusive(True)
 
         self.listagemencomendas()
+    
+    def listagemdetalhesencomenda(self, selecao):
+        try:
+            conn_BD = ligacao_BD()
+            if conn_BD and conn_BD!=-1:
+                selecao = self.tableView.selectionModel().selectedRows()
+                if selecao:
+                    cmd_sql = f"SELECT idArtigo, designacao, quantidade FROM detalheencomenda, artigo WHERE artigo.id = detalheencomenda.idArtigo AND nEncomenda = {selecao[0].row()} ORDER BY idArtigo ASC;"
+                    
+                    dados = listagem_BD(conn_BD, cmd_sql)
+                    modelo = QStandardItemModel()
+                    modelo.setHorizontalHeaderLabels(["Id. Artigo","Designação", "Quantidade"])
+                    for linha in dados:
+                        modelo.appendRow([QStandardItem(str(celula) if celula is not None else "") for celula in linha])
+                    self.tableView_2.setModel(modelo)
+                    self.tableView_2.resizeColumnsToContents()
+                else:
+                    return
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self,"Erro",f"Ocorreu um erro:{e}")
 
     def listagemencomendas(self):
         try:
@@ -63,6 +83,9 @@ class formEncomendas(QtWidgets.QMainWindow,Ui_MainWindow):
                 for linha in dados:
                     modelo.appendRow([QStandardItem(str(celula) if celula is not None else "") for celula in linha])
                 self.tableView.setModel(modelo)
+
+                #Chamar a atualização dos detalhes da encomenda
+                self.tableView.selectionModel().selectionChanged.connect(self.listagemdetalhesencomenda)
                 
                 self.tableView.resizeColumnsToContents()
                 # Selecionar apenas linhas inteiras
